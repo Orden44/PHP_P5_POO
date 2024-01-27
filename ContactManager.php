@@ -55,14 +55,20 @@ class ContactManager {
      * @param string @name : le nom du contact
      * @param string @email : l'email du contact
      * @param string @phone : le téléphone du contact
-     * @return Contact : le contact qui vient d'être créé
+     * @return Contact|null : le contact qui vient d'être créé
      */
-    public function create(string $name, string $email, string $phone): Contact 
+    public function create(string $name, string $email, string $phone): ?Contact 
     {
-        $contactsStatement = $this->db->prepare("INSERT INTO contact (name, email, phone) VALUES (:name, :email, :phone)");
-        $contactsStatement->execute(["name" => $name, "email" => $email, "phone" => $phone]);
-        $id = $this->db->lastInsertId();
-        return $this->findById($id);
+        try {
+            $contactsStatement = $this->db->prepare("INSERT INTO contact (name, email, phone) VALUES (:name, :email, :phone)");
+            $contactsStatement->execute(["name" => $name, "email" => $email, "phone" => $phone]);
+            $id = $this->db->lastInsertId();
+        }
+        catch (Exception $e)
+        {
+            return null;
+        }
+        return $this->findById($id);    
     }
 
     /**
@@ -81,12 +87,18 @@ class ContactManager {
      * @param string $name : nom du contact à modifier
      * @param string $email : email du contact à modifier
      * @param string $phone : téléphone du contact à modifier
-     * @return Contact : le contact qui vient d'être modifié
+     * @return Contact|null : le contact qui vient d'être modifié
      */
-    public function modify(int $id, string $name, string $email, string $phone): Contact 
+    public function modify(int $id, string $name, string $email, string $phone): ?Contact 
     {
-        $contactsStatement = $this->db->prepare("UPDATE `contact` SET `name` = :name, `email` = :email, `phone` = :phone WHERE `contact`.`id` = :id");
-        $contactsStatement->execute(["id" => $id, "name" => $name, "email" => $email, "phone" => $phone]);
+        try {
+            $contactsStatement = $this->db->prepare("UPDATE `contact` SET `name` = :name, `email` = :email, `phone` = :phone WHERE `contact`.`id` = :id");
+            $contactsStatement->execute(["id" => $id, "name" => $name, "email" => $email, "phone" => $phone]);    
+        }
+        catch (Exception $e)
+        {
+            return null;
+        }
         return $this->findById($id);
     }
 }

@@ -54,6 +54,10 @@ class Command {
     public function create($name, $email, $phone): void
     {
         $contact = $this->contactManager->create($name, $email, $phone);
+        if (!$contact) {
+            echo "\nCréation non valide, le contact ou l'email existe déjà\n";
+            return;
+        }
         echo "\nContact créé : " . $contact->__toString();
     }
 
@@ -84,6 +88,10 @@ class Command {
     public function modify($id, $name, $email, $phone): void
     {
         $contact = $this->contactManager->modify($id, $name, $email, $phone);
+        if (!$contact) {
+            echo "\nModification non valide, l'email existe déjà pour un autre conctact\n";
+            return;
+        }
         echo "\nContact modifié : " . $contact->__toString();
     }
 
